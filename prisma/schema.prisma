@@ -1,0 +1,173 @@
+// Prisma Schema Design Reference for Explore Spaces
+// This file is used for documentation and design purposes, as the runtime uses Supabase/PostgreSQL directly.
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model ListingTypeRegistry {
+  id          String   @id @default(uuid()) @db.Uuid
+  name        String   @unique
+  slug        String   @unique
+  contact_fee Decimal  @db.Decimal(10, 2) @map("contact_fee")
+  viewing_fee Decimal  @db.Decimal(10, 2) @map("viewing_fee")
+  icon_url    String?  @map("icon_url")
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @default(now()) @updatedAt @map("updated_at")
+
+  @@map("listing_type_registry")
+}
+
+model ConsumerProfile {
+  id           String               @id @default(uuid()) @db.Uuid
+  userId       String               @unique @map("user_id") @db.Uuid
+  fullName     String?              @map("full_name")
+  phoneNumber  String?              @map("phone_number")
+  avatarUrl    String?              @map("avatar_url")
+  otpCode      String?              @map("otp_code")
+  isVerified   Boolean              @default(false) @map("is_verified")
+  createdAt    DateTime             @default(now()) @map("created_at")
+  favorites    Favorite[]
+  transactions PaymentTransaction[]
+
+  @@map("consumer_profiles")
+}
+
+model Favorite {
+  userId        String   @map("user_id") @db.Uuid
+  listingId     String   @map("listing_id") @db.Uuid
+  listingTypeId String   @map("listing_type_id") @db.Uuid
+  createdAt     DateTime @default(now()) @map("created_at")
+
+  consumer ConsumerProfile @relation(fields: [userId], references: [userId], onDelete: Cascade)
+
+  @@id([userId, listingId])
+  @@map("favorites")
+}
+
+enum PaymentStatus {
+  PENDING
+  SUCCESSFUL
+  FAILED
+}
+
+model PaymentTransaction {
+  id                 String          @id @default(uuid()) @db.Uuid
+  paystackReference  String          @unique @map("paystack_reference")
+  consumerId         String          @map("consumer_id") @db.Uuid
+  listingId          String          @map("listing_id") @db.Uuid
+  listingType        String          @map("listing_type")
+  amount             Decimal         @db.Decimal(10, 2)
+  status             PaymentStatus   @default(PENDING)
+  createdAt          DateTime        @default(now()) @map("created_at")
+  updatedAt          DateTime        @default(now()) @updatedAt @map("updated_at")
+
+  consumer ConsumerProfile @relation(fields: [consumerId], references: [userId], onDelete: Cascade)
+
+  @@map("payment_transaction")
+}
+
+// Representing existing tables in Prisma for completeness and design reference
+model Apartment {
+  id             String   @id @default(uuid()) @db.Uuid
+  name           String
+  price          Decimal  @db.Decimal(15, 2)
+  address        String
+  state          String
+  thumbnailPath  String?  @map("thumbnail_path")
+  modelUrl       String?  @map("model_url")
+  agentId        String   @map("agent_id") @db.Uuid
+  agencyId       String   @map("agency_id") @db.Uuid
+  phoneNumber    String?  @map("phone_number")
+  status         String   @default("PENDING")
+  fileSize       BigInt   @default(0) @map("file_size")
+  listingType    String   @default("SALE") @map("listing_type")
+  rentInterval   String?  @map("rent_interval")
+  landSize       String?  @map("land_size")
+  numBedrooms    Int      @default(0) @map("num_bedrooms")
+  numBathrooms   Int      @default(0) @map("num_bathrooms")
+  hasWater       Boolean  @default(false) @map("has_water")
+  createdAt      DateTime @default(now()) @map("created_at")
+  updatedAt      DateTime @default(now()) @updatedAt @map("updated_at")
+
+  @@map("apartments")
+}
+
+model EventCenter {
+  id              String   @id @default(uuid()) @db.Uuid
+  name            String
+  price           Decimal  @db.Decimal(15, 2)
+  address         String
+  state           String
+  thumbnailPath   String?  @map("thumbnail_path")
+  modelUrl        String?  @map("model_url")
+  agentId         String   @map("agent_id") @db.Uuid
+  agencyId        String   @map("agency_id") @db.Uuid
+  phoneNumber     String?  @map("phone_number")
+  status          String   @default("PENDING")
+  fileSize        BigInt   @default(0) @map("file_size")
+  listingType     String   @default("SALE") @map("listing_type")
+  rentInterval    String?  @map("rent_interval")
+  sittingCapacity Int      @default(0) @map("sitting_capacity")
+  parkingYard     Boolean  @default(false) @map("parking_yard")
+  generator       Boolean  @default(false)
+  security        Boolean  @default(false)
+  createdAt       DateTime @default(now()) @map("created_at")
+  updatedAt       DateTime @default(now()) @updatedAt @map("updated_at")
+
+  @@map("event_centers")
+}
+
+model PublicSpace {
+  id            String   @id @default(uuid()) @db.Uuid
+  name          String
+  price         Decimal  @db.Decimal(15, 2)
+  address       String
+  state         String
+  thumbnailPath String?  @map("thumbnail_path")
+  modelUrl      String?  @map("model_url")
+  agentId       String   @map("agent_id") @db.Uuid
+  agencyId      String   @map("agency_id") @db.Uuid
+  phoneNumber   String?  @map("phone_number")
+  status        String   @default("PENDING")
+  fileSize      BigInt   @default(0) @map("file_size")
+  listingType   String   @default("SALE") @map("listing_type")
+  rentInterval  String?  @map("rent_interval")
+  floorArea     String?  @map("floor_area")
+  powerSupply   Boolean  @default(false) @map("power_supply")
+  parking       Boolean  @default(false)
+  internet      Boolean  @default(false)
+  createdAt     DateTime @default(now()) @map("created_at")
+  updatedAt     DateTime @default(now()) @updatedAt @map("updated_at")
+
+  @@map("public_space")
+}
+
+// Prisma representation of the SQL View
+model UnifiedListing {
+  id              String   @id @db.Uuid
+  name            String
+  price           Decimal  @db.Decimal(15, 2)
+  address         String
+  state           String
+  thumbnailPath   String?  @map("thumbnail_path")
+  modelUrl        String?  @map("model_url")
+  agentId         String   @map("agent_id") @db.Uuid
+  agencyId        String   @map("agency_id") @db.Uuid
+  phoneNumber     String?  @map("phone_number")
+  status          String
+  fileSize        BigInt   @map("file_size")
+  listingType     String   @map("listing_type")
+  rentInterval    String?  @map("rent_interval")
+  createdAt       DateTime @map("created_at")
+  updatedAt       DateTime @map("updated_at")
+  listingTypeSlug String   @map("listing_type_slug")
+  features        Json
+
+  @@map("unified_listings")
+}
