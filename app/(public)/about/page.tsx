@@ -1,7 +1,6 @@
 import React from 'react'
 import { getAboutContent, getTeamMembers } from '@/app/actions/about-actions'
 import { AboutHeroSection } from '@/components/about-hero-section'
-import { AboutOrganizationSection } from '@/components/about-organization-section'
 import { AboutTeamSection } from '@/components/about-team-section'
 import { Header } from '@/components/header'
 import { Footer } from '@/components/footer'
@@ -26,7 +25,6 @@ export default async function AboutPage() {
       <Header />
       
       <AboutHeroSection content={aboutContent} />
-      <AboutOrganizationSection content={aboutContent} />
       <AboutTeamSection members={teamMembers} />
 
       <Footer />

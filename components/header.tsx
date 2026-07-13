@@ -160,6 +160,7 @@ export function Header() {
           {/* Logo */}
           <Link href="/" className="flex items-center gap-2 z-50">
             <img src="/logo.svg" alt="HousePadi Logo" className="h-10 w-auto" style={{ filter: 'brightness(0) invert(1)' }} />
+            <span className="text-lg font-bold tracking-tight text-white">HousePadi</span>
           </Link>
 
           {/* Navigation */}
