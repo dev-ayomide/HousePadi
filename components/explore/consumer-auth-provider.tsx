@@ -129,12 +129,28 @@ export function ConsumerAuthProvider({ children }: { children: ReactNode }) {
 
   // 3. Protected Action Interceptor
   const triggerProtectedAction = (action: () => void, options?: { isFavorite?: boolean }) => {
-    if (options?.isFavorite && !loading && !!user && !consumer) {
-      setRestrictedModalOpen(true)
+    if (options?.isFavorite) {
+      // Favorites/collections are tied to a consumer_id, so only a real consumer session
+      // can perform them. A signed-in agent/vendor/admin gets an explanatory dialog instead
+      // of the generic login prompt, since they're not actually logged out.
+      if (consumer) {
+        action()
+        return
+      }
+      if (!loading && !!user) {
+        setRestrictedModalOpen(true)
+        return
+      }
+      setPendingAction(() => action)
+      openAuthModal()
       return
     }
 
-    if (activeSession) {
+    // Non-favorite protected actions (viewing/paying for contact info, etc.) are backed by
+    // server actions that already accept any authenticated Supabase user as a fallback
+    // identity when there's no consumer session — so any signed-in user (consumer, agent,
+    // vendor, admin) should be let through here rather than being forced into a consumer login.
+    if (activeSession || user) {
       action()
     } else {
       setPendingAction(() => action)
