@@ -5,7 +5,6 @@ import { MapPin, ArrowUpRight, Loader2 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import Link from 'next/link'
 import { getImmersiveMasterpieces } from '@/app/actions/listing-actions'
-import { ProtectedAction } from '@/components/explore/protected-action'
 import { toast } from 'sonner'
 
 export function FeaturedListingsSection() {
@@ -98,20 +97,19 @@ export function FeaturedListingsSection() {
                   </div>
                 </div>
 
-                <ProtectedAction onClick={() => {
-                  if (item.model_url) {
-                    window.open(`/explore/viewer?url=${encodeURIComponent(item.model_url)}&title=${encodeURIComponent(item.name)}`, '_blank')
-                  } else {
-                    toast.error('This listing does not have a 3D asset file attached.')
-                  }
-                }}>
-                  <Button 
-                    variant="outline" 
-                    className="w-full h-14 rounded-none border-neutral-800 bg-transparent text-white hover:bg-white hover:text-black text-[10px] uppercase tracking-[0.3em] font-bold transition-all duration-500"
-                  >
-                    Step In
-                  </Button>
-                </ProtectedAction>
+                <Button
+                  onClick={() => {
+                    if (item.model_url) {
+                      window.open(`/explore/viewer?url=${encodeURIComponent(item.model_url)}&title=${encodeURIComponent(item.name)}`, '_blank')
+                    } else {
+                      toast.error('This listing does not have a 3D asset file attached.')
+                    }
+                  }}
+                  variant="outline"
+                  className="w-full h-14 rounded-none border-neutral-800 bg-transparent text-white hover:bg-white hover:text-black text-[10px] uppercase tracking-[0.3em] font-bold transition-all duration-500"
+                >
+                  Step In
+                </Button>
               </div>
             </div>
           ))}

@@ -10,19 +10,28 @@ const SUCCESS_STATUS_TOKENS = ['success', 'successful', 'completed', 'paid']
  * the status-poll in /explore/payment (via checkTransactionStatus), because ALATPay's real
  * webhook payload shape isn't confirmed by public docs. No signature verification is applied
  * here for the same reason — add it once ALATPay's webhook signing scheme is documented.
+ *
+ * GET is also handled and both handlers always return 2xx for anything that isn't a genuine
+ * processing error: gateway dashboards typically send a reachability/verification ping (an
+ * empty or bare-bones request) before accepting a webhook URL into a merchant profile, and a
+ * 4xx/405 response to that ping is enough to make the dashboard reject the URL outright.
  */
+export async function GET() {
+  return NextResponse.json({ success: true, message: 'ALATPay webhook endpoint is live.' })
+}
+
 export async function POST(req: Request) {
   try {
     const payload = await req.json().catch(() => null)
     if (!payload) {
-      return NextResponse.json({ success: false, error: 'Malformed JSON payload.' }, { status: 400 })
+      return NextResponse.json({ success: true, ignored: true, message: 'No JSON payload — treated as a verification ping.' })
     }
 
     const reference = payload.reference || payload.data?.reference || payload.transactionId || payload.data?.transactionId
     const status = payload.status || payload.data?.status
 
     if (!reference) {
-      return NextResponse.json({ success: false, error: 'Missing transaction reference.' }, { status: 400 })
+      return NextResponse.json({ success: true, ignored: true, message: 'No transaction reference — treated as a verification ping.' })
     }
 
     const isSuccess = typeof status === 'string'
@@ -52,7 +61,7 @@ export async function POST(req: Request) {
 
     if (!txRecord) {
       console.error(`Transaction record not found in DB for reference: ${reference}`)
-      return NextResponse.json({ success: false, error: 'Transaction reference not found.' }, { status: 404 })
+      return NextResponse.json({ success: true, ignored: true, message: 'Transaction reference not found.' })
     }
 
     const isTierUpgrade = txRecord.listing_id === CONSUMER_TIER_UPGRADE_SENTINEL_LISTING_ID

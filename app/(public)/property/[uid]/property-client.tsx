@@ -453,29 +453,31 @@ export function PropertyClient({ listing, contactFee }: PropertyClientProps) {
                   </ProtectedAction>
                 )}
 
-                <ProtectedAction onClick={() => {
-                  if (listing.model_url) {
-                    window.open(`/explore/viewer?url=${encodeURIComponent(listing.model_url)}&title=${encodeURIComponent(listing.name)}`, '_blank')
-                  } else {
-                    toast.error('This listing does not have a 3D asset file attached.')
-                  }
-                }}>
-                  <button className="w-full flex items-center justify-center gap-2 h-14 bg-transparent border border-white/20 hover:bg-white/5 hover:text-white text-xs font-bold uppercase tracking-widest transition-all">
-                    <Eye className="w-4 h-4" /> Enter 3D Space
-                  </button>
-                </ProtectedAction>
+                <button
+                  onClick={() => {
+                    if (listing.model_url) {
+                      window.open(`/explore/viewer?url=${encodeURIComponent(listing.model_url)}&title=${encodeURIComponent(listing.name)}`, '_blank')
+                    } else {
+                      toast.error('This listing does not have a 3D asset file attached.')
+                    }
+                  }}
+                  className="w-full flex items-center justify-center gap-2 h-14 bg-transparent border border-white/20 hover:bg-white/5 hover:text-white text-xs font-bold uppercase tracking-widest transition-all"
+                >
+                  <Eye className="w-4 h-4" /> Enter 3D Space
+                </button>
 
-                <ProtectedAction onClick={() => {
-                  if (listing.model_url) {
-                    window.location.href = `housepadiar://${SITE_URL.replace('https://', '')}?model_url=${encodeURIComponent(listing.model_url)}`
-                  } else {
-                    toast.error('This listing does not have a 3D asset file attached.')
-                  }
-                }}>
-                  <button className="w-full flex items-center justify-center gap-2 h-14 bg-emerald-950/30 border border-emerald-500/30 hover:bg-emerald-900/50 hover:text-white text-emerald-400 text-xs font-bold uppercase tracking-widest transition-all">
-                    <Smartphone className="w-4 h-4" /> View in App
-                  </button>
-                </ProtectedAction>
+                <button
+                  onClick={() => {
+                    if (listing.model_url) {
+                      window.location.href = `housepadiar://${SITE_URL.replace('https://', '')}?model_url=${encodeURIComponent(listing.model_url)}`
+                    } else {
+                      toast.error('This listing does not have a 3D asset file attached.')
+                    }
+                  }}
+                  className="w-full flex items-center justify-center gap-2 h-14 bg-emerald-950/30 border border-emerald-500/30 hover:bg-emerald-900/50 hover:text-white text-emerald-400 text-xs font-bold uppercase tracking-widest transition-all"
+                >
+                  <Smartphone className="w-4 h-4" /> View in App
+                </button>
               </div>
             </div>
           </div>
