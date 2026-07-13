@@ -1324,8 +1324,8 @@ export function HousePadiViewer({
 
       {/* Collapsible Persistent HUD Hotspots Sidebar */}
       {showJoystick && (
-        <aside className={`h-full border-r border-white/5 bg-neutral-950/90 backdrop-blur-md flex flex-col justify-between z-10 relative transition-all duration-300 ease-in-out overflow-hidden shrink-0 ${
-          sidebarOpen ? 'w-[280px] md:w-[320px] opacity-100' : 'w-0 opacity-0 pointer-events-none'
+        <aside className={`hidden md:flex h-full border-r border-white/5 bg-neutral-950/90 backdrop-blur-md flex-col justify-between z-10 relative transition-all duration-300 ease-in-out overflow-hidden shrink-0 ${
+          sidebarOpen ? 'md:w-[320px] opacity-100' : 'w-0 opacity-0 pointer-events-none'
         }`}>
           <div className="p-6 space-y-6">
             <div className="space-y-3">
@@ -1533,9 +1533,9 @@ export function HousePadiViewer({
         
         {/* Sidebar Toggle Button */}
         {showJoystick && (
-          <button 
+          <button
             onClick={() => setSidebarOpen(!sidebarOpen)}
-            className="absolute top-4 left-4 p-2.5 bg-neutral-950/80 border border-white/10 hover:bg-neutral-900 text-white rounded-none z-20 transition-all duration-300 shadow-lg flex items-center justify-center gap-1.5"
+            className="hidden md:flex absolute top-4 left-4 p-2.5 bg-neutral-950/80 border border-white/10 hover:bg-neutral-900 text-white rounded-none z-20 transition-all duration-300 shadow-lg items-center justify-center gap-1.5"
             title={sidebarOpen ? "Collapse Sidebar" : "Expand Sidebar"}
           >
             <Compass className={`w-4 h-4 ${sidebarOpen ? 'text-emerald-400 animate-pulse' : 'text-neutral-400'}`} />
